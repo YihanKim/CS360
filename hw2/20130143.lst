@@ -1,0 +1,53 @@
+/* CS360 assignment 2 */
+/* 20130143 Yihan Kim */
+
+/*
+1. find all the tuples in the Printer relation for color printers.
+Remember that color is a boolean-valued attribute.
+*/
+select * from printer where color='1';
+
+/*
+2. find the model number, speed, and hard-disk size for all pc's whose price is under $800.
+*/
+select model, speed, hd from PC where price < 800;
+
+/*
+3. find the manufacturers of laptops.
+*/
+select distinct maker from product where type='laptop';
+
+/*
+4. Find those manufactures that sell PC’s but not Laptops
+*/
+
+(select distinct maker from product where type='pc')
+minus
+(select distinct maker from product where type='laptop');
+
+/* another answer */
+/*
+select distinct maker from product
+where type='pc' and maker not in (
+   select maker from product where type='laptop');
+*/
+
+/*
+5. Find the model number and price of all products (of any type) made by manufacturer C
+*/
+
+select model, price from
+((select model, price from pc) union
+ (select model, price from laptop) union
+ (select model, price from printer)),
+(select model as mod, maker from product)
+where model = mod and maker='C';
+
+/*
+6. Find those processor speeds that occur in two or more PC’s
+*/
+select distinct speed from (
+  select model, speed
+  from (select model, speed from pc),
+    (select model as model2, speed as speed2 from pc)
+  where model != model2 and speed = speed2);
